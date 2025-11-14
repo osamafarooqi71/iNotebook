@@ -1,0 +1,3 @@
+- npx create-reat-app ./
+- npm i react-router-dom
+- npm i concurrently // to run multiple npm run commands at a same time (eg. frontend and backend)
