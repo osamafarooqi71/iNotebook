@@ -49,53 +49,68 @@ router.post(
   }
 );
 
-// Router 3: Update an existing note using Post "/api/notes/updatenote", Login required
-router.post(
-  "/updatenote",
-  fetchuser,
-  [
-    body("title", "Enter a valid title").isLength({ min: 3 }),
-    body("description", "Description must be atleast 5 characters").isLength({
-      min: 5,
-    }),
-  ],
-  async (req, res) => {
-    const errors = await validationResult(req);
-    // cheack if there is any error, return with 400 response code and error messages in json formate.
-    if (!errors.isEmpty()) {
-      return res.status(400).json({ error: errors.array() });
-    }
-    try {
-      const note = await Note.findById(req.body.noteid);
-      if (!note) {
-        return res.send(`Note not found for Id: ${req.body.noteid}`);
-      }
-      note.title = req.body.title;
-      note.description = req.body.description;
-      note.tag = req.body.tag;
-      const noteSaved = await note.save();
-      if (!noteSaved) {
-        return res.send("Unable to save note. Internel server error.");
-      }
-      res.send("Note Updated Successfully!");
-    } catch (error) {
-      console.error(error.message);
-      res.status(500).send(`Internal server error. ${error.message}`);
-    }
-  }
-);
-
-// Router 4: Delete specific note using Post "/api/notes/deletenote", Login required
-router.post("/deletenote", fetchuser, async (req, res) => {
+// Router 3: Update an existing note using Put "/api/notes/updatenote/:id", Login required
+router.put("/updatenote/:id", fetchuser, async (req, res) => {
   try {
-    const deletedNotes = await Note.findOneAndDelete({ _id: req.body.id });
-    if (!deletedNotes) {
-      return res.send(`There some error while  Deleting note ${req.body.id}.`);
+    const { title, description, tag } = req.body; // seprate things using destructeing approch
+    // Check weither note exists or not
+    let note = await Note.findById(req.params.id);
+    if (!note) {
+      return res.status(404).send(`Note not found for Id: ${req.body.noteid}`);
     }
-    res.send("Note Deleted successfully!");
+
+    // Create new note using updated requested conetent
+    const newNote = {};
+    if (title) {
+      newNote.title = title;
+    }
+    if (description) {
+      newNote.description = description;
+    }
+    if (tag) {
+      newNote.tag = tag;
+    }
+
+    // Check weither user is authorized to access update the note or not.
+    if (note.userId.toString() !== req.user.id) {
+      //req.user.id is coming from middleware funtion fetchuser
+      return res.status(401).send("Access denied");
+    }
+
+    // Update note
+    note = await Note.findByIdAndUpdate(
+      req.params.id,
+      { $set: newNote },
+      { new: true }
+    );
+    res.send("Note Updated Successfully!").json(note);
   } catch (error) {
     console.error(error.message);
-    res.status(500).send("Internal server error");
+    res.status(500).send(`Internal server error. ${error.message}`);
+  }
+});
+
+// Router 4: Delete specific note using DELETE "/api/notes/deletenote/:id", Login required
+router.delete("/deletenote/:id", fetchuser, async (req, res) => {
+  try {
+    // Check weither note exists or not
+    let note = await Note.findById(req.params.id);
+    if (!note) {
+      return res.status(404).send(`Note not found for Id: ${req.params.id}`);
+    }
+
+    // Check weither user is authorized to access update the note or not.
+    if (note.userId.toString() !== req.user.id) {
+      //req.user.id is coming from middleware funtion fetchuser
+      return res.status(401).send("Access denied");
+    }
+
+    // Update note
+    note = await Note.findByIdAndDelete(req.params.id);
+    res.json({ Success: "Note deleted successfully", note });
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).send(`Internal server error. ${error.message}`);
   }
 });
 
