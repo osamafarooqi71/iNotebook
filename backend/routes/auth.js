@@ -56,6 +56,7 @@ router.post(
 );
 
 // Router 2: Authenticate user using: POST "/api/auth/login". No login required
+// Ideal for response.json({success, message});
 router.post(
   "/login",
   [
@@ -63,10 +64,11 @@ router.post(
     body("password", "Password cannot be blank").exists(),
   ],
   async (req, res) => {
+    let success = false;
     const errors = await validationResult(req);
     // cheack if there is any error, return with 400 response code and error messages in json formate.
     if (!errors.isEmpty()) {
-      return res.status(400).json({ error: errors.array() });
+      return res.status(400).json({ success, message: errors.array() });
     }
 
     try {
@@ -77,13 +79,13 @@ router.post(
       if (!user) {
         res
           .status(400)
-          .send({ error: "Please use correct email and password" });
+          .json({ success, message: "Please use correct email and password" });
       }
       let passwordCompare = await bcrypt.compare(password, user.password);
       if (!passwordCompare) {
         res
           .status(400)
-          .send({ error: "Please use correct email and password" });
+          .json({ success, message: "Please use correct email and password" });
       }
 
       const payload = {
@@ -92,10 +94,14 @@ router.post(
         },
       };
       const authToken = jwt.sign(payload, JWT_SECRECT);
-      return res.json({ authToken });
+      return res.json({
+        success: true,
+        message: "Login successful",
+        authToken,
+      });
     } catch (error) {
       console.error(error, error.message);
-      res.status(500).send("Internal server error");
+      res.status(500).json({ success, message: "Internal server error" });
     }
   }
 );
