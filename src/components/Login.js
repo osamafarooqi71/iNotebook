@@ -9,9 +9,7 @@ const Login = () => {
   const onChange = (e) => {
     setCredentials({ ...credentials, [e.target.name]: e.target.value });
   };
-  //   const onChange = (e) => {
-  //     setNote({ ...note, [e.target.name]: e.target.value });
-  //   };
+
   const handleLogin = async (e) => {
     e.preventDefault();
     // API Call - Login:
@@ -28,11 +26,6 @@ const Login = () => {
         },
         body: JSON.stringify(data),
       });
-
-      // Removed this because this stops the below alert message and returns from here.
-      //   if (!response.ok) {
-      //     throw new Error(`Response status: ${response.status}`);
-      //   }
 
       const result = await response.json();
       console.log(result);
@@ -63,6 +56,7 @@ const Login = () => {
             value={credentials.email}
             aria-describedby="emailHelp"
             onChange={onChange}
+            required
           />
           <div id="emailHelp" className="form-text">
             We'll never share your email with anyone else.
@@ -79,18 +73,10 @@ const Login = () => {
             name="password"
             value={credentials.password}
             onChange={onChange}
+            required
           />
         </div>
-        <div className="mb-3 form-check">
-          <input
-            type="checkbox"
-            className="form-check-input"
-            id="exampleCheck1"
-          />
-          <label className="form-check-label" htmlFor="exampleCheck1">
-            Check me out
-          </label>
-        </div>
+
         <button type="submit" className="btn btn-primary">
           Submit
         </button>

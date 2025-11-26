@@ -18,17 +18,20 @@ router.post(
     }),
   ],
   async (req, res) => {
+    let success = false;
     const errors = await validationResult(req);
     // cheack if there is any error, return with 400 response code and error messages in json formate.
     if (!errors.isEmpty()) {
-      return res.status(400).json({ error: errors.array() });
+      return res.status(400).json({ success, error: errors.array() });
     }
 
     try {
       // Check if email already registered, then return with status code 400
       let user = await User.findOne({ email: req.body.email });
       if (user) {
-        return res.status(400).send({ error: "Email already registered!" });
+        return res
+          .status(400)
+          .send({ success, error: "Email already registered!" });
       }
 
       const salt = await bcrypt.genSalt(10);
@@ -47,7 +50,7 @@ router.post(
       };
       const authToken = jwt.sign(data, JWT_SECRECT);
 
-      res.json({ authToken });
+      res.json({ success: true, authToken });
     } catch (error) {
       console.error(error.message);
       res.status(500).send("Internal server error");
