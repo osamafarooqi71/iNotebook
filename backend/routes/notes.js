@@ -7,7 +7,8 @@ const fetchuser = require("../middleware/fetchuser");
 // Router 1: Get all notes using Get "/api/notes/fetchallnotes", Login required
 router.get("/fetchallnotes", fetchuser, async (req, res) => {
   try {
-    const notes = await Note.find();
+    const userId = req.user.id;
+    const notes = await Note.find({ userId: userId });
     // console.log(notes);
     res.json(notes);
   } catch (error) {

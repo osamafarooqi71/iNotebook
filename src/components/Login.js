@@ -1,8 +1,9 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-const Login = () => {
+const Login = (props) => {
   const host = process.env.REACT_APP_API_URL;
+  const showAlert = props.showAlert;
   const [credentials, setCredentials] = useState({ email: "", password: "" });
   let navigate = useNavigate();
 
@@ -30,19 +31,22 @@ const Login = () => {
       const result = await response.json();
       console.log(result);
       if (result.success) {
-        localStorage.setItem("token", result.authtoken);
+        localStorage.setItem("token", result.authToken);
+        showAlert("Logged in successfully", "success");
         navigate("/"); /// Navigate to a new home page route
       } else {
-        alert("Invalid credentials");
+        showAlert("Invalid credentials", "danger");
       }
 
       // Client Side Logic - Login:
     } catch (error) {
       console.error(error.message);
+      showAlert("Invalid credentials", "danger");
     }
   };
   return (
     <div>
+      <h2 className="my-3">Login to continue iNotebook</h2>
       <form onSubmit={handleLogin}>
         <div className="mb-3">
           <label htmlFor="email" className="form-label">

@@ -1,8 +1,9 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-const Signup = () => {
+const Signup = (props) => {
   const host = process.env.REACT_APP_API_URL;
+  const showAlert = props.showAlert;
   const [credentials, setCredentials] = useState({
     name: "",
     email: "",
@@ -37,18 +38,22 @@ const Signup = () => {
       console.log(result);
       if (result.success) {
         localStorage.setItem("token", result.authtoken);
+        showAlert("Account created successfully", "success");
         navigate("/"); /// Navigate to a new home page route
       } else {
-        alert("Invalid credentials");
+        showAlert("Something went wrong", "danger");
       }
 
       // Client Side Logic - Login:
     } catch (error) {
       console.error(error.message);
+      showAlert("Something went wrong", "danger");
     }
   };
   return (
     <div>
+      {" "}
+      <h2 className="my-3">Signup with iNotebook</h2>
       <form onSubmit={handleSignup}>
         <div className="mb-3">
           <label htmlFor="name" className="form-label">
@@ -61,6 +66,8 @@ const Signup = () => {
             name="name"
             value={credentials.name}
             onChange={onChange}
+            minLength={3}
+            required
           />
         </div>
         <div className="mb-3">
@@ -88,6 +95,7 @@ const Signup = () => {
             name="password"
             value={credentials.password}
             onChange={onChange}
+            minLength={5}
             required
           />
         </div>
@@ -102,6 +110,7 @@ const Signup = () => {
             name="confirmPassword"
             value={credentials.confirmPassword}
             onChange={onChange}
+            minLength={5}
             required
           />
         </div>

@@ -1,0 +1,28 @@
+my-contact-app/
+├── client/
+│   ├── public/
+│   ├── src/
+│   │   ├── api/           # API calls
+│   │   │   └── contactApi.js
+│   │   ├── components/    # Reusable UI components
+│   │   │   └── InputField.js
+│   │   ├── features/      # Feature-based folders
+│   │   │   └── contact/
+│   │   │       ├── ContactForm.jsx
+│   │   │       └── contactSlice.js
+│   │   ├── hooks/         # Custom hooks
+│   │   │   └── useContactForm.js
+│   │   ├── App.jsx
+│   │   ├── main.jsx
+│   │   └── index.css
+│   └── package.json
+├── server/
+│   ├── controllers/
+│   │   └── contactController.js
+│   ├── routes/
+│   │   └── contactRoutes.js
+│   ├── db/
+│   │   └── index.js       # PostgreSQL connection
+│   ├── app.js
+│   └── package.json
+└── README.md

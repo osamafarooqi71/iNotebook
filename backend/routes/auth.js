@@ -110,6 +110,7 @@ router.post(
 );
 
 // Router 3: Get user data using Post "/api/auth/getuser", Login required
+// this is created to test middleware funtion middleware/fetchuse.js, to grab the user records from auth-token
 router.post("/getuser", fetchuser, async (req, res) => {
   try {
     const userId = req.user.id;

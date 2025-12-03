@@ -1,12 +1,17 @@
 import React, { useContext, useEffect, useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import notesContext from "../context/notes/noteContext";
 import Noteitem from "./Noteitem";
 import AddNote from "./AddNote";
 
 const Notes = () => {
   const context = useContext(notesContext);
-  const { notes, getAllNotes, editNote } = context;
+  const navigate = useNavigate();
+  const { notes: notes, getAllNotes, editNote } = context;
   useEffect(() => {
+    if (!localStorage.getItem("token")) {
+      navigate("/login");
+    }
     getAllNotes();
     // eslint-disable-next-line
     // due to [] run only once
@@ -74,7 +79,7 @@ const Notes = () => {
               ></button>
             </div>
             <div className="modal-body">
-              <form className="my-3">
+              <form className="my-3" autoComplete="on">
                 <div className="mb-3">
                   <label htmlFor="etitle" className="form-label">
                     Title
